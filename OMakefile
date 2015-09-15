@@ -1,0 +1,55 @@
+# ------------------------------------------------------------
+# ルール部
+# ------------------------------------------------------------
+# コンパイル
+COQC=coqc
+COQC_FLAGS=
+
+%.vo %.glob: %.v
+	$(COQC) $(COQC_FLAGS) $<
+
+# 依存関係の解析
+# パスは適宜変更してください
+.SCANNER: %.vo: %.v
+	coqdep -w -I . $<
+
+# 便利関数
+public.Proof(files) =
+	vo=$(addsuffix .vo,$(files))
+	value $(vo)
+
+# ------------------------------------------------------------
+# 利用例:
+# A.v B.v C.vをコンパイルしたい場合
+# ------------------------------------------------------------
+FILES[] =
+	Lang
+	BoolOrderedType
+	ListOrderedType
+	Var
+	Context
+	TruthTable
+	PropLogic
+
+.DEFAULT: $(Proof $(FILES))
+
+.PHONY: clean
+clean:
+	rm -f *.vo *.glob *~ *.omc .omakedb .omakedb.lock *.html
+
+
+################################################
+# Build an OCaml program
+#
+
+# FILES[] =
+#    file1
+#    file2
+#
+# PROGRAM =
+# OCAML_LIBS +=
+# OCAML_CLIBS +=
+# OCAML_OTHER_LIBS +=
+# OCAML_LIB_FLAGS +=
+#
+# .DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
